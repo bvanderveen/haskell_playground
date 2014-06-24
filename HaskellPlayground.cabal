@@ -1,0 +1,12 @@
+name:           HaskellPlayground
+version:        0.0
+synopsis:       Benjamin's Playground 
+author:         Benjamin van der Veen
+license:        MIT
+build-type:     Simple
+cabal-version:  >= 1.2
+
+executable HaskellPlayground
+  build-depends:  base, text
+  main-is:        Main.hs
+  hs-source-dirs: src
