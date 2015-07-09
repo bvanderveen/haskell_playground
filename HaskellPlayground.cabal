@@ -1,12 +1,35 @@
-name:           HaskellPlayground
+name:           Playground
 version:        0.0
 synopsis:       Benjamin's Playground 
 author:         Benjamin van der Veen
 license:        MIT
 build-type:     Simple
-cabal-version:  >= 1.2
+cabal-version:  >= 1.10
 
-executable HaskellPlayground
+library
+  hs-source-dirs: src
+  ghc-options:         -Wall -O2 -threaded
+  build-depends:  base, text
+  default-language:    Haskell2010
+  exposed-modules: Playground
+
+executable Playground
+  hs-source-dirs: src
+  ghc-options:         -Wall -O2 -threaded
   build-depends:  base, text
   main-is:        Main.hs
-  hs-source-dirs: src
+  default-language:    Haskell2010
+
+test-suite TestPlayground
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      tests
+  ghc-options:         -Wall -O2 -threaded
+  main-is:             MainTest.hs
+  build-depends:       base,
+                       hspec >= 2.1.4,
+                       hspec-discover >= 2.1.4,
+                       text >= 1.2,
+                       wl-pprint-text,
+                       Playground
+  default-language:    Haskell2010
+

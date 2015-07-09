@@ -1,5 +1,5 @@
-import qualified Data.Text as Text
+import Playground
 
 main :: IO ()
-main = print(Text.pack "hello") 
+main = print(show (Playground.result 3))
 
