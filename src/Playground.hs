@@ -1,10 +1,67 @@
 module Playground (
-    result
+    result,
+    tokenize,
+    parseLisp,
+    LispValue(..)
 )
 where
 
-numbers :: [Integer]
-numbers = [1, 2, 3, 4, 5, 6]
+import Control.Monad
+import Text.ParserCombinators.Parsec hiding (spaces)
 
-result :: Integer -> [Integer]
-result y = filter (\x -> x < y) numbers
+data LispValue = Atom String
+    | List [LispValue]
+    | Number Integer
+    | String String
+    | Bool Bool
+    deriving (Show, Eq)
+
+-- TODO IITO lexeme
+spaces :: Parser ()
+spaces = skipMany1 space
+
+symbol :: Parser Char
+symbol = oneOf "!#$%&|*+-/:<=>?@^_~"
+
+parseAtom :: Parser LispValue
+parseAtom = do
+    first <- letter <|> symbol
+    rest <- many (letter <|> digit <|> symbol)
+    let atom = first:rest
+    return $ case atom of
+        "true" -> Bool True
+        "false" -> Bool False
+        _ -> Atom atom
+
+parseString :: Parser LispValue
+parseString = do
+    char '"'
+    x <- many (noneOf "\"")
+    char '"'
+    return $ String x
+
+parseNumber :: Parser LispValue
+parseNumber = liftM (Number . read) $ many1 digit
+
+parseList :: Parser LispValue
+parseList = liftM List $ sepBy parseExpresssion spaces
+
+parseQuote :: Parser LispValue
+parseQuote = do
+    char '\''
+    x <- parseExpresssion
+    return $ List [Atom "quote", x]
+
+parseExpresssion :: Parser LispValue
+parseExpresssion = parseAtom
+    <|> parseString
+    <|> parseNumber
+    <|> parseQuote
+    <|> do 
+            char '('
+            x <- try parseList
+            char ')'
+            return x
+
+parseLisp :: String -> Either ParseError LispValue
+parseLisp input = parse parseExpresssion "lisp" input
