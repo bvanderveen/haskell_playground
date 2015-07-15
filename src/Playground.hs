@@ -72,7 +72,12 @@ lispValueAsInteger :: LispValue -> Integer
 lispValueAsInteger (Number n) = n
 
 builtins :: [(String, [LispValue] -> LispValue)]
-builtins = [("+", numericBinaryOperator (+))]
+builtins = [
+    ("+", numericBinaryOperator (+)),
+    ("-", numericBinaryOperator (-)),
+    ("*", numericBinaryOperator (*)),
+    ("/", numericBinaryOperator div),
+    ("mod", numericBinaryOperator mod)]
 
 apply :: String -> [LispValue] -> LispValue
 apply functionName args = maybe (Bool False) ($ args) $ lookup functionName builtins
