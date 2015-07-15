@@ -1,7 +1,6 @@
 module Playground (
-    result,
-    tokenize,
     parseLisp,
+    parseEval,
     LispValue(..)
 )
 where
@@ -65,3 +64,12 @@ parseExpresssion = parseAtom
 
 parseLisp :: String -> Either ParseError LispValue
 parseLisp input = parse parseExpresssion "lisp" input
+
+eval :: LispValue -> LispValue
+eval value@(String _) = value
+eval value@(Number _) = value
+eval value@(Bool _) = value
+eval (List [Atom "quote", value]) = value
+
+parseEval :: String -> Either ParseError LispValue
+parseEval input = either (\e -> Left e) (\v -> Right $ eval v) (parseLisp input)

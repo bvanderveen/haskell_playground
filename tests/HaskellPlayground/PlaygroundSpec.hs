@@ -3,15 +3,23 @@ module HaskellPlayground.PlaygroundSpec (
 ) where
 
 import Test.Hspec
-import qualified Playground (result, parseLisp, LispValue(..))
+import Playground
 
 spec :: Spec
 spec = do
     describe "tokenizer" $ do
         it "should tokenize" $ do
-            Playground.parseLisp "(foo bar (baz 42))" 
-            `shouldBe` Right (Playground.List [
-                Playground.Atom "foo", 
-                Playground.Atom "bar", 
-                Playground.List [Playground.Atom "baz", Playground.Number 42]])
+            parseLisp "(foo bar (baz 42))" 
+            `shouldBe` Right (List [
+                Atom "foo", 
+                Atom "bar", 
+                List [Atom "baz", Number 42]])
+
+    describe "eval" $ do
+        it "should eval numbers" $ do
+            parseEval "42" `shouldBe` Right (Number 42)
+            
+        it "should eval strings" $ do
+            parseEval "\"foo\"" `shouldBe` Right (String "foo")
+
 
