@@ -65,11 +65,24 @@ parseExpresssion = parseAtom
 parseLisp :: String -> Either ParseError LispValue
 parseLisp input = parse parseExpresssion "lisp" input
 
+numericBinaryOperator :: (Integer -> Integer -> Integer) -> [LispValue] -> LispValue
+numericBinaryOperator operator arguments = Number $ foldl1 operator $ map lispValueAsInteger arguments
+
+lispValueAsInteger :: LispValue -> Integer
+lispValueAsInteger (Number n) = n
+
+builtins :: [(String, [LispValue] -> LispValue)]
+builtins = [("+", numericBinaryOperator (+))]
+
+apply :: String -> [LispValue] -> LispValue
+apply functionName args = maybe (Bool False) ($ args) $ lookup functionName builtins
+
 eval :: LispValue -> LispValue
 eval value@(String _) = value
 eval value@(Number _) = value
 eval value@(Bool _) = value
 eval (List [Atom "quote", value]) = value
+eval (List (Atom func : args)) = apply func $ map eval args
 
 parseEval :: String -> Either ParseError LispValue
 parseEval input = either (\e -> Left e) (\v -> Right $ eval v) (parseLisp input)

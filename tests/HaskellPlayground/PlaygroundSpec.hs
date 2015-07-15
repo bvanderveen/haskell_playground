@@ -32,5 +32,9 @@ spec = do
             parseEval "(quote ())" `shouldBe` Right (List [])
             parseEval "(quote (true false))" `shouldBe` Right (List [Bool True, Bool False])
 
+        it "should eval addition" $ do
+            parseEval "(+ 1 2)" `shouldBe` Right (Number 3)
+            parseEval "(+ 1 2 3)" `shouldBe` Right (Number 6)
+            parseEval "(+ 1 (+ 2 3) (+ 4 5) 5)" `shouldBe` Right (Number 20)
 
 
