@@ -43,4 +43,12 @@ spec = do
             parseEval "(/ 12 4)" `shouldBe` Right (Number 3)
             parseEval "(mod 12 5)" `shouldBe` Right (Number 2)
 
+        it "should eval lambdas" $ do
+            parseEval "((lambda () \"foo\"))" `shouldBe` Right (String "foo")
 
+        it "should eval defs in lambdas" $ do
+            parseEval "((lambda () (def foo \"bar\") foo))" `shouldBe` Right (String "bar")
+
+        it "should eval builtins in lambdas" $ do
+            parseEval "((lambda () \"foo\"))" `shouldBe` Right (String "foo")
+            parseEval "((lambda (arg1 arg2) (+ arg1 arg2 3)) 1 2)" `shouldBe` Right (Number 6)
