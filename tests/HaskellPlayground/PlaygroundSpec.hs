@@ -45,12 +45,33 @@ spec = do
             parseEval "(/ 12 4)" `shouldBe` Right (Number 3)
             parseEval "(mod 12 5)" `shouldBe` Right (Number 2)
 
+        it "should eval equality" $ do
+            parseEval "(= 3 4)" `shouldBe` Right (Bool False)
+            parseEval "(= 1 1)" `shouldBe` Right (Bool True)
+            parseEval "(= '(12 5) '())" `shouldBe` Right (Bool False)
+            parseEval "(= '(12 12) '())" `shouldBe` Right (Bool False)
+
         it "should eval lambdas" $ do
             parseEval "((lambda () \"foo\"))" `shouldBe` Right (String "foo")
 
-        it "should eval defs in lambdas" $ do
+        it "should eval defs" $ do 
+            parseEval "(def foo \"bar\")" `shouldBe` Right (String "bar")
             parseEval "((lambda () (def foo \"bar\") foo))" `shouldBe` Right (String "bar")
 
         it "should eval builtins in lambdas" $ do
-            parseEval "((lambda () \"foo\"))" `shouldBe` Right (String "foo")
             parseEval "((lambda (arg1 arg2) (+ arg1 arg2 3)) 1 2)" `shouldBe` Right (Number 6)
+
+        it "should eval if statements" $ do
+            parseEval "(if false \"t\" \"f\")" `shouldBe` Right (String "f")
+            parseEval "(if true 1 2)" `shouldBe` Right (Number 1)
+
+        it "should eval recursive functions" $ do
+            let factorial n = "((lambda () (def factorial (lambda (n) (if (= n 0) 1 (if (= n 1) 1 (* n (factorial (- n 1))))))) (factorial " ++ n ++ ")))"
+
+            parseEval (factorial "0") `shouldBe` Right (Number 1)
+            parseEval (factorial "1") `shouldBe` Right (Number 1)
+            parseEval (factorial "2") `shouldBe` Right (Number 2)
+            parseEval (factorial "3") `shouldBe` Right (Number 6)
+            parseEval (factorial "4") `shouldBe` Right (Number 24)
+
+
