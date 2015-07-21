@@ -71,8 +71,8 @@ eval env (List [Atom "quote", value]) = (env, value)
 
 eval env (List [Atom "def", Atom name, value]) = 
     let e' = bindEnv env [(name, v')]
-        v' = snd $ eval e' value in 
-        (e', v')
+        (e'', v') = eval e' value in 
+        (e'', v')
 
 eval env (List (Atom "lambda" : List params : body)) = 
     (env, Function env (map (\v -> case v of (Atom a) -> a) params) body)
