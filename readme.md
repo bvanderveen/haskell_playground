@@ -7,6 +7,7 @@ TODO:
 - [ ] builtins for IO
 - [ ] builtins for list manipulation
 - [ ] a basic standard library
+- [ ] map, reduce
 - [ ] types: nil, vectors
 - [ ] variadic functions
 - [ ] basic shorthand/macros: `quote` -> `'`, `(lambda (a1, …, aN))` -> `#( %1 … $N)`
