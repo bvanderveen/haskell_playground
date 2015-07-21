@@ -49,7 +49,7 @@ spec = do
             parseEval "(= 3 4)" `shouldBe` Right (Bool False)
             parseEval "(= 1 1)" `shouldBe` Right (Bool True)
             parseEval "(= '(12 5) '())" `shouldBe` Right (Bool False)
-            parseEval "(= '(12 12) '())" `shouldBe` Right (Bool False)
+            parseEval "(= '(12 5 (false)) '(12 5 (false)))" `shouldBe` Right (Bool True)
 
         it "should eval lambdas" $ do
             parseEval "((lambda () \"foo\"))" `shouldBe` Right (String "foo")
