@@ -3,6 +3,7 @@ module HaskellPlayground.PlaygroundSpec (
 ) where
 
 import Test.Hspec
+import Playground.Parser
 import Playground
 
 spec :: Spec
@@ -31,6 +32,7 @@ spec = do
             parseEval "(quote foo)" `shouldBe` Right (Atom "foo")
             parseEval "(quote ())" `shouldBe` Right (List [])
             parseEval "(quote (true false))" `shouldBe` Right (List [Bool True, Bool False])
+            parseEval "'(true false)" `shouldBe` Right (List [Bool True, Bool False])
 
         it "should eval addition and subtraction" $ do
             parseEval "(+ 1 2)" `shouldBe` Right (Number 3)
