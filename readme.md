@@ -10,6 +10,7 @@ TODO:
 - [ ] types: nil, vectors
 - [ ] variadic functions
 - [ ] basic shorthand/macros: `quote` -> `'`, `(lambda (a1, …, aN))` -> `#( %1 … $N)`
+- [x] recursion
 
 To hack:
 
