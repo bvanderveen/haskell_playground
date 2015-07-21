@@ -1,76 +1,12 @@
 module Playground (
-    parseLisp,
-    parseEval,
-    LispValue(..)
+    parseEval
 )
 where
 
-import Control.Monad
-import Text.ParserCombinators.Parsec hiding (spaces)
+import Playground.Parser
+import Text.ParserCombinators.Parsec
 
-data LispValue = Atom String
-    | List [LispValue]
-    | Number Integer
-    | String String
-    | Bool Bool
-    | Function { closure :: Env, params :: [String], body :: [LispValue] }
-    deriving (Show, Eq)
-
--- TODO IITO lexeme
-spaces :: Parser ()
-spaces = skipMany1 space
-
-symbol :: Parser Char
-symbol = oneOf "!#$%&|*+-/:<=>?@^_~"
-
-parseAtom :: Parser LispValue
-parseAtom = do
-    first <- letter <|> symbol
-    rest <- many (letter <|> digit <|> symbol)
-    let atom = first:rest
-    return $ case atom of
-        "true" -> Bool True
-        "false" -> Bool False
-        _ -> Atom atom
-
-parseString :: Parser LispValue
-parseString = do
-    char '"'
-    x <- many (noneOf "\"")
-    char '"'
-    return $ String x
-
-parseNumber :: Parser LispValue
-parseNumber = liftM (Number . read) $ many1 digit
-
-parseList :: Parser LispValue
-parseList = liftM List $ sepBy parseExpresssion spaces
-
-parseQuote :: Parser LispValue
-parseQuote = do
-    char '\''
-    x <- parseExpresssion
-    return $ List [Atom "quote", x]
-
-parseExpresssion :: Parser LispValue
-parseExpresssion = parseAtom
-    <|> parseString
-    <|> parseNumber
-    <|> parseQuote
-    <|> do 
-            char '('
-            x <- try parseList
-            char ')'
-            return x
-
-parseLisp :: String -> Either ParseError LispValue
-parseLisp input = parse parseExpresssion "lisp" input
-
-type Env = [(String, LispValue)]
 type Builtin = [LispValue] -> LispValue
-
-nullEnv :: Env
-nullEnv = []
 
 numericBinaryOperator :: (Integer -> Integer -> Integer) -> Builtin
 numericBinaryOperator operator arguments = Number $ foldl1 operator $ map lispValueAsInteger arguments

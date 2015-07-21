@@ -13,7 +13,9 @@ library
                   text, 
                   parsec
   default-language:    Haskell2010
-  exposed-modules: Playground
+  exposed-modules: 
+                  Playground, 
+                  Playground.Parser
 
 executable Playground
   hs-source-dirs: src
