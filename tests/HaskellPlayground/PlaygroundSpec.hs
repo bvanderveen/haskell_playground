@@ -65,6 +65,10 @@ spec = do
             parseEval "(if false \"t\" \"f\")" `shouldBe` Right (String "f")
             parseEval "(if true 1 2)" `shouldBe` Right (Number 1)
 
+        it "should eval let" $ do
+            parseEval "(let (a 42) a)" `shouldBe` Right (Number 42)
+            parseEval "(let (a 42 b 10) (+ a b))" `shouldBe` Right (Number 52)
+
         it "should eval recursive functions" $ do
             let factorial n = "((lambda () (def factorial (lambda (n) (if (= n 0) 1 (if (= n 1) 1 (* n (factorial (- n 1))))))) (factorial " ++ n ++ ")))"
 

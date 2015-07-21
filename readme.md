@@ -11,7 +11,7 @@ TODO:
 - [ ] types: nil, vectors
 - [ ] variadic functions
 - [ ] pattern matching/destructuring
-- [ ] let
+- [x] let
 - [ ] basic shorthand/macros: `quote` -> `'`, `(lambda (a1, …, aN))` -> `#( %1 … $N)`
 - [x] recursion
 - [ ] modules/namespaces

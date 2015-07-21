@@ -48,12 +48,23 @@ apply func args = case func of
         where
             num = toInteger . length
 
+bindAll :: Env -> [LispValue] -> Env
+bindAll env [] = env
+bindAll env ((Atom k):v:kvs) = let 
+    (e', v') = eval env v
+    e'' = bindEnv e' [(k, v')] in
+    bindAll e'' kvs
+bindAll env [_] = error $ "Attemped to bind unenven number of forms"
 
 eval :: Env -> LispValue -> (Env, LispValue)
 eval env value@(String _) = (env, value)
 eval env value@(Number _) = (env, value)
 eval env value@(Bool _) = (env, value)
 eval env (Atom a) = (env, getEnv env a)
+eval env (List [Atom "let", List kvs, body]) = let
+    e' = bindAll env kvs in
+    eval e' body
+
 eval env (List [Atom "if", pred, t, f]) = (env, case snd (eval env pred) of
     (Bool p) -> snd $ eval env $ if p then t else f)
 eval env (List [Atom "quote", value]) = (env, value)
