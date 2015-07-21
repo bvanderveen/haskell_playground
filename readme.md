@@ -10,8 +10,11 @@ TODO:
 - [ ] map, reduce
 - [ ] types: nil, vectors
 - [ ] variadic functions
+- [ ] pattern matching/destructuring
+- [ ] let
 - [ ] basic shorthand/macros: `quote` -> `'`, `(lambda (a1, …, aN))` -> `#( %1 … $N)`
 - [x] recursion
+- [ ] modules/namespaces
 
 To hack:
 
