@@ -61,12 +61,15 @@ eval env (List (Atom "lambda" : List params : body)) =
 eval env (List (func : args)) = 
     case func of 
     (Atom a) -> case lookup a builtins of
-        Just builtin -> (env, builtin $ map (\a -> snd $ eval env a) args)
+        Just builtin -> (env, builtin $ evaluateSome args)
         Nothing -> applyNormal
     otherwise -> applyNormal
     where
+        evaluateOne arg = snd $ eval env arg
+        evaluateSome args = map evaluateOne args
+        evaluateFunc func = snd $ eval env func
         applyNormal = 
-            (env, apply (snd $ eval env func) $ map (\a -> snd $ eval env a) args)
+            (env, apply (evaluateFunc func) $ evaluateSome args)
 
 parseEval :: String -> Either ParseError LispValue
 parseEval input = either (\e -> Left e) (\v -> Right $ snd $ eval nullEnv v) (parseLisp input)
