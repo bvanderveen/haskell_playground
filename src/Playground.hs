@@ -1,10 +1,12 @@
 module Playground (
-    parseEval
+    parseEval,
+    showValue
 )
 where
 
 import Playground.Parser
 import Text.ParserCombinators.Parsec
+import Data.List
 
 type Builtin = [LispValue] -> LispValue
 
@@ -100,3 +102,12 @@ eval env (List (func : args)) =
 
 parseEval :: String -> Either ParseError LispValue
 parseEval input = either (\e -> Left e) (\v -> Right $ snd $ eval nullEnv v) (parseLisp input)
+
+
+showValue :: LispValue -> String
+showValue (String s) = "\"" ++ s ++ "\""
+showValue (Atom a) = a
+showValue (Number n) = show n
+showValue (Bool True) = "true"
+showValue (Bool False) = "false"
+showValue (List xs) = "(" ++ intercalate " " (map showValue xs) ++ ")"

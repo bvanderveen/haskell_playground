@@ -17,6 +17,21 @@ spec = do
                 List [Atom "baz", Number 42],
                 List []])
 
+    describe "show" $ do
+        it "should show numbers" $ do
+            showValue (Number 42) `shouldBe` "42"
+
+        it "should show strings" $ do
+            showValue (String "bar") `shouldBe` "\"bar\""
+
+        it "should show booleans" $ do
+            showValue (Bool False) `shouldBe` "false"
+            showValue (Bool True) `shouldBe` "true"
+
+        it "should show lists" $ do
+            showValue (List [String "foo", Bool False, Number 42]) `shouldBe` "(\"foo\" false 42)"
+
+
     describe "eval" $ do
         it "should eval numbers" $ do
             parseEval "42" `shouldBe` Right (Number 42)
