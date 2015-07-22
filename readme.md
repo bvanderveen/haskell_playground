@@ -7,7 +7,8 @@ TODO:
 - [ ] builtins for IO
 - [ ] builtins for list manipulation
 - [ ] a basic standard library
-- [ ] map, reduce
+- [x] map
+- [ ] reduce
 - [ ] types: nil, vectors
 - [ ] variadic functions
 - [ ] pattern matching/destructuring

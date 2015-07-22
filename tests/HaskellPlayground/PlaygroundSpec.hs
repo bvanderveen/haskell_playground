@@ -79,4 +79,6 @@ spec = do
             parseEval (factorial "3") `shouldBe` Right (Number 6)
             parseEval (factorial "4") `shouldBe` Right (Number 24)
 
+        it "should map" $ do
+            parseEval "(map (lambda (x) (+ x 1)) '(1 2 3))" `shouldBe` Right (List [Number 2, Number 3, Number 4])
 

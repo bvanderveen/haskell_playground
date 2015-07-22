@@ -14,6 +14,9 @@ numericBinaryOperator operator arguments = Number $ foldl1 operator $ map lispVa
 equalValues :: [LispValue] -> LispValue
 equalValues [l, r] = Bool $ l == r
 
+mapValues :: [LispValue] -> LispValue
+mapValues [f, List xs] = List $ map (\x -> apply f [x]) xs
+
 lispValueAsInteger :: LispValue -> Integer
 lispValueAsInteger (Number n) = n
 lispValueAsInteger v = error $ "Not an integer: " ++ show v
@@ -25,7 +28,8 @@ builtins = [
     ("*", numericBinaryOperator (*)),
     ("/", numericBinaryOperator div),
     ("mod", numericBinaryOperator mod),
-    ("=", equalValues)]
+    ("=", equalValues),
+    ("map", mapValues)]
 
 bindEnv :: Env -> [(String, LispValue)] -> Env
 bindEnv env bindings = env ++ bindings
