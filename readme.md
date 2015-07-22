@@ -18,6 +18,7 @@ TODO:
 - [x] `quote` -> `'`
 - [x] recursion
 - [ ] modules/namespaces
+- [x] show AST
 
 To hack:
 
