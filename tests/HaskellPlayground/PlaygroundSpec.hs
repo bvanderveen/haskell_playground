@@ -82,3 +82,6 @@ spec = do
         it "should map" $ do
             parseEval "(map (lambda (x) (+ x 1)) '(1 2 3))" `shouldBe` Right (List [Number 2, Number 3, Number 4])
             parseEval "(let (f (lambda (x) (+ x 1))) (map f '(1 2 3)))" `shouldBe` Right (List [Number 2, Number 3, Number 4])
+
+        it "should reduce" $ do
+            parseEval "(reduce (lambda (a i) (+ a i)) 0 '(1 2 3))" `shouldBe` Right (Number 6)

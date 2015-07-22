@@ -17,6 +17,9 @@ equalValues [l, r] = Bool $ l == r
 mapValues :: [LispValue] -> LispValue
 mapValues [f, List xs] = List $ map (\x -> apply f [x]) xs
 
+reduceValues :: [LispValue] -> LispValue
+reduceValues [f, ac, List xs] = foldl (\a i -> apply f [a, i]) ac xs
+
 lispValueAsInteger :: LispValue -> Integer
 lispValueAsInteger (Number n) = n
 lispValueAsInteger v = error $ "Not an integer: " ++ show v
@@ -29,7 +32,8 @@ builtins = [
     ("/", numericBinaryOperator div),
     ("mod", numericBinaryOperator mod),
     ("=", equalValues),
-    ("map", mapValues)]
+    ("map", mapValues),
+    ("reduce", reduceValues)]
 
 bindEnv :: Env -> [(String, LispValue)] -> Env
 bindEnv env bindings = env ++ bindings
