@@ -84,5 +84,7 @@ spec = do
             parseEval "(let (f (lambda (x) (+ x 1))) (map f '(1 2 3)))" `shouldBe` Right (List [Number 2, Number 3, Number 4])
 
         it "should reduce" $ do
+            -- unfortuately + doesn't evaluate to an `apply`-able function :( 
+            -- parseEval "(reduce + 0 '(1 2 3))" `shouldBe` Right (Number 6)
             parseEval "(reduce (lambda (a i) (+ a i)) 0 '(1 2 3))" `shouldBe` Right (Number 6)
             parseEval "(let (f (lambda (a i) (+ a i))) (reduce f 0 '(1 2 3)))" `shouldBe` Right (Number 6)

@@ -9,6 +9,7 @@ TODO:
 - [ ] a basic standard library
 - [x] map
 - [x] reduce
+- [ ] apply builtin (?). like right now `(reduce + '(1 2 3))` doesn't work
 - [ ] types: nil, vectors
 - [ ] variadic functions
 - [ ] pattern matching/destructuring
