@@ -111,3 +111,4 @@ showValue (Number n) = show n
 showValue (Bool True) = "true"
 showValue (Bool False) = "false"
 showValue (List xs) = "(" ++ intercalate " " (map showValue xs) ++ ")"
+showValue (Function { closure=_, params=ps, body=b }) = showValue $ List ([Atom "lambda"] ++ [List $ map (\x -> Atom x) ps] ++ b)

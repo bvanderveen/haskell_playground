@@ -18,6 +18,9 @@ spec = do
                 List []])
 
     describe "show" $ do
+        it "should show atoms" $ do
+            showValue (Atom "foo") `shouldBe` "foo"
+
         it "should show numbers" $ do
             showValue (Number 42) `shouldBe` "42"
 
@@ -31,6 +34,9 @@ spec = do
         it "should show lists" $ do
             showValue (List [String "foo", Bool False, Number 42]) `shouldBe` "(\"foo\" false 42)"
 
+        it "should show functions" $ do
+            showValue (Function [("foo", (Atom "foo"))] ["arg1", "arg2"] [(List [Atom "bar", (Atom "arg1"), (Atom "arg2")])]) `shouldBe`
+                "(lambda (arg1 arg2) (bar arg1 arg2))"
 
     describe "eval" $ do
         it "should eval numbers" $ do
