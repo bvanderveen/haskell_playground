@@ -64,6 +64,7 @@ spec = do
         it "should eval if statements" $ do
             parseEval "(if false \"t\" \"f\")" `shouldBe` Right (String "f")
             parseEval "(if true 1 2)" `shouldBe` Right (Number 1)
+            parseEval "(if (= 1 1) 1 2)" `shouldBe` Right (Number 1)
 
         it "should eval let" $ do
             parseEval "(let (a 42) a)" `shouldBe` Right (Number 42)
