@@ -57,6 +57,9 @@ apply func args = case func of
                     snd $ foldl (\(e', v) f  -> eval e' f) (e, Bool False) body
         where
             num = toInteger . length
+    (FunctionRef ref) ->
+        let b = lookup ref builtins in
+            maybe (Bool False) (\bb -> bb args) b
 
 bindAll :: Env -> [LispValue] -> Env
 bindAll env [] = env
@@ -70,7 +73,9 @@ eval :: Env -> LispValue -> (Env, LispValue)
 eval env value@(String _) = (env, value)
 eval env value@(Number _) = (env, value)
 eval env value@(Bool _) = (env, value)
-eval env (Atom a) = (env, getEnv env a)
+eval env (Atom a) = (env, case lookup a builtins of 
+    Just builtin -> FunctionRef a 
+    Nothing -> getEnv env a)
 eval env (List [Atom "let", List kvs, body]) = let
     e' = bindAll env kvs in
     eval e' body
@@ -107,6 +112,7 @@ parseEval input = either (\e -> Left e) (\v -> Right $ snd $ eval nullEnv v) (pa
 showValue :: LispValue -> String
 showValue (String s) = "\"" ++ s ++ "\""
 showValue (Atom a) = a
+showValue (FunctionRef f) = f
 showValue (Number n) = show n
 showValue (Bool True) = "true"
 showValue (Bool False) = "false"

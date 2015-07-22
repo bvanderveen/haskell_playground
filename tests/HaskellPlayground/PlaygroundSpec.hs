@@ -38,6 +38,9 @@ spec = do
             showValue (Function [("foo", (Atom "foo"))] ["arg1", "arg2"] [(List [Atom "bar", (Atom "arg1"), (Atom "arg2")])]) `shouldBe`
                 "(lambda (arg1 arg2) (bar arg1 arg2))"
 
+        it "should show function refs" $ do
+            showValue (FunctionRef "+") `shouldBe` "+"
+
     describe "eval" $ do
         it "should eval numbers" $ do
             parseEval "42" `shouldBe` Right (Number 42)
@@ -90,6 +93,7 @@ spec = do
         it "should eval let" $ do
             parseEval "(let (a 42) a)" `shouldBe` Right (Number 42)
             parseEval "(let (a 42 b 10) (+ a b))" `shouldBe` Right (Number 52)
+            parseEval "(let (a (+ 40 3) b (* 2 5)) (+ a b))" `shouldBe` Right (Number 53)
 
         it "should eval recursive functions" $ do
             let factorial n = "((lambda () (def factorial (lambda (n) (if (= n 0) 1 (if (= n 1) 1 (* n (factorial (- n 1))))))) (factorial " ++ n ++ ")))"
@@ -105,8 +109,7 @@ spec = do
             parseEval "(let (f (lambda (x) (+ x 1))) (map f '(1 2 3)))" `shouldBe` Right (List [Number 2, Number 3, Number 4])
 
         it "should reduce" $ do
-            -- unfortuately + doesn't evaluate to an `apply`-able function :( 
-            -- parseEval "(reduce + 0 '(1 2 3))" `shouldBe` Right (Number 6)
-            -- parseEval "(let (f +) (reduce f 0 '(1 2 3)))" `shouldBe` Right (Number 6)
+            parseEval "(reduce + 0 '(1 2 3))" `shouldBe` Right (Number 6)
+            parseEval "(let (f +) (reduce f 0 '(1 2 3)))" `shouldBe` Right (Number 6)
             parseEval "(reduce (lambda (a i) (+ a i)) 0 '(1 2 3))" `shouldBe` Right (Number 6)
             parseEval "(let (f (lambda (a i) (+ a i))) (reduce f 0 '(1 2 3)))" `shouldBe` Right (Number 6)

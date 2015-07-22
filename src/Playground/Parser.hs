@@ -20,6 +20,7 @@ data LispValue = Atom String
     | String String
     | Bool Bool
     | Function { closure :: Env, params :: [String], body :: [LispValue] }
+    | FunctionRef String
     deriving (Show, Eq)
 
 -- TODO IITO lexeme
