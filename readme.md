@@ -12,7 +12,8 @@ TODO:
 - [ ] variadic functions
 - [ ] pattern matching/destructuring
 - [x] let
-- [ ] basic shorthand/macros: `quote` -> `'`, `(lambda (a1, …, aN))` -> `#( %1 … $N)`
+- [ ] basic shorthand/macros: , `(lambda (a1, …, aN))` -> `#( %1 … $N)`
+- [x] `quote` -> `'`
 - [x] recursion
 - [ ] modules/namespaces
 
