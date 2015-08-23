@@ -18,6 +18,7 @@ spec = do
                 List []])
 
     describe "show" $ do
+
         it "should show atoms" $ do
             showValue (Atom "foo") `shouldBe` "foo"
 
@@ -41,7 +42,8 @@ spec = do
         it "should show function refs" $ do
             showValue (FunctionRef "+") `shouldBe` "+"
 
-    describe "eval" $ do
+    describe "basic evaluation" $ do
+
         it "should eval numbers" $ do
             parseEval "42" `shouldBe` Right (Number 42)
             
@@ -57,6 +59,70 @@ spec = do
             parseEval "(quote ())" `shouldBe` Right (List [])
             parseEval "(quote (true false))" `shouldBe` Right (List [Bool True, Bool False])
             parseEval "'(true false)" `shouldBe` Right (List [Bool True, Bool False])
+
+    describe "eval" $ do
+
+        it "should evaluate the argument" $ do
+            parseEval "(let (foo 'bar bar 'baz) (eval 'foo))" `shouldBe` Right (Atom "bar")
+
+        it "should be evaluate the argument" $ do
+            parseEval "(let (foo 'bar bar 'baz) (eval foo))" `shouldBe` Right (Atom "baz")
+
+        it "should eval constants" $ do
+            parseEval "(eval 5)" `shouldBe` Right (Number 5)
+
+        it "should eval expressions" $ do            
+            parseEval "(eval (+ 1 2))" `shouldBe` Right (Number 3)
+
+        it "should eval forms in bindings" $ do            
+            parseEval "(let (x '(+ 1 2)) (eval x))" `shouldBe` Right (Number 3)
+
+        it "should eval quoted special forms" $ do
+            parseEval "(eval '(+ 1 2 3))" `shouldBe` Right (Number 6)
+
+        it "should eval quoted builtins" $ do
+            parseEval "(eval '(if true 1 2))" `shouldBe` Right (Number 1)
+
+    describe "def" $ do
+
+        it "should add a binding to the environment" $ do 
+            parseEvalInEnv nullEnv "(def foo \"bar\")" `shouldBe` Right ([("foo", (String "bar"))], (String "bar"))
+
+        it "should evaluate to the evaluated second argument" $ do 
+            parseEval "(def foo \"bar\")" `shouldBe` Right (String "bar")
+            parseEval "(def foo (+ 2 4))" `shouldBe` Right (Number 6)
+            parseEval "((lambda () (def foo \"bar\") foo))" `shouldBe` Right (String "bar")
+
+    describe "lambda" $ do
+
+        it "should eval lambdas" $ do
+            parseEval "((lambda () \"foo\"))" `shouldBe` Right (String "foo")
+
+        it "should eval builtins in lambdas" $ do
+            parseEval "((lambda (arg1 arg2) (+ arg1 arg2 3)) 1 2)" `shouldBe` Right (Number 6)
+
+    describe "if" $ do
+
+        it "should eval if statements" $ do
+            parseEval "(if false \"t\" \"f\")" `shouldBe` Right (String "f")
+            parseEval "(if true 1 2)" `shouldBe` Right (Number 1)
+            parseEval "(if (= 1 1) 1 2)" `shouldBe` Right (Number 1)
+
+        it "should eval let" $ do
+            parseEvalInEnv nullEnv "(let (a 42) a)" `shouldBe` Right ([], (Number 42))
+            parseEval "(let (a 42 b 10) (+ a b))" `shouldBe` Right (Number 52)
+            parseEval "(let (a (+ 40 3) b (* 2 5)) (+ a b))" `shouldBe` Right (Number 53)
+
+        it "should eval recursive functions" $ do
+            let factorial n = "((lambda () (def factorial (lambda (n) (if (= n 0) 1 (if (= n 1) 1 (* n (factorial (- n 1))))))) (factorial " ++ n ++ ")))"
+
+            parseEval (factorial "0") `shouldBe` Right (Number 1)
+            parseEval (factorial "1") `shouldBe` Right (Number 1)
+            parseEval (factorial "2") `shouldBe` Right (Number 2)
+            parseEval (factorial "3") `shouldBe` Right (Number 6)
+            parseEval (factorial "4") `shouldBe` Right (Number 24)
+
+    describe "builtins" $ do
 
         it "should eval addition and subtraction" $ do
             parseEval "(+ 1 2)" `shouldBe` Right (Number 3)
@@ -74,35 +140,6 @@ spec = do
             parseEval "(= 1 1)" `shouldBe` Right (Bool True)
             parseEval "(= '(12 5) '())" `shouldBe` Right (Bool False)
             parseEval "(= '(12 5 (false)) '(12 5 (false)))" `shouldBe` Right (Bool True)
-
-        it "should eval lambdas" $ do
-            parseEval "((lambda () \"foo\"))" `shouldBe` Right (String "foo")
-
-        it "should eval defs" $ do 
-            parseEval "(def foo \"bar\")" `shouldBe` Right (String "bar")
-            parseEval "((lambda () (def foo \"bar\") foo))" `shouldBe` Right (String "bar")
-
-        it "should eval builtins in lambdas" $ do
-            parseEval "((lambda (arg1 arg2) (+ arg1 arg2 3)) 1 2)" `shouldBe` Right (Number 6)
-
-        it "should eval if statements" $ do
-            parseEval "(if false \"t\" \"f\")" `shouldBe` Right (String "f")
-            parseEval "(if true 1 2)" `shouldBe` Right (Number 1)
-            parseEval "(if (= 1 1) 1 2)" `shouldBe` Right (Number 1)
-
-        it "should eval let" $ do
-            parseEval "(let (a 42) a)" `shouldBe` Right (Number 42)
-            parseEval "(let (a 42 b 10) (+ a b))" `shouldBe` Right (Number 52)
-            parseEval "(let (a (+ 40 3) b (* 2 5)) (+ a b))" `shouldBe` Right (Number 53)
-
-        it "should eval recursive functions" $ do
-            let factorial n = "((lambda () (def factorial (lambda (n) (if (= n 0) 1 (if (= n 1) 1 (* n (factorial (- n 1))))))) (factorial " ++ n ++ ")))"
-
-            parseEval (factorial "0") `shouldBe` Right (Number 1)
-            parseEval (factorial "1") `shouldBe` Right (Number 1)
-            parseEval (factorial "2") `shouldBe` Right (Number 2)
-            parseEval (factorial "3") `shouldBe` Right (Number 6)
-            parseEval (factorial "4") `shouldBe` Right (Number 24)
 
         it "should map" $ do
             parseEval "(map (lambda (x) (+ x 1)) '(1 2 3))" `shouldBe` Right (List [Number 2, Number 3, Number 4])

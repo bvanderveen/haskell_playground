@@ -1,5 +1,6 @@
 module Playground (
     parseEval,
+    parseEvalInEnv,
     showValue
 )
 where
@@ -76,13 +77,16 @@ eval env value@(Bool _) = (env, value)
 eval env (Atom a) = (env, case lookup a builtins of 
     Just builtin -> FunctionRef a 
     Nothing -> getEnv env a)
-eval env (List [Atom "let", List kvs, body]) = let
-    e' = bindAll env kvs in
-    eval e' body
+eval env (List [Atom "let", List kvs, body]) =
+    (env, snd $ eval (bindAll env kvs) body)
 
 eval env (List [Atom "if", pred, t, f]) = (env, case snd (eval env pred) of
     (Bool p) -> snd $ eval env $ if p then t else f)
+
 eval env (List [Atom "quote", value]) = (env, value)
+
+eval env (List [Atom "eval", value]) =
+    eval env $ snd $ eval env value
 
 eval env (List [Atom "def", Atom name, value]) = 
     let e' = bindEnv env [(name, v')]
@@ -91,6 +95,7 @@ eval env (List [Atom "def", Atom name, value]) =
 
 eval env (List (Atom "lambda" : List params : body)) = 
     (env, Function env (map (\v -> case v of (Atom a) -> a) params) body)
+
 
 eval env (List (func : args)) = 
     case func of 
@@ -105,8 +110,11 @@ eval env (List (func : args)) =
         applyNormal = 
             (env, apply (evaluateFunc func) $ evaluateSome args)
 
+parseEvalInEnv :: Env -> String -> Either ParseError (Env, LispValue)
+parseEvalInEnv env input = fmap (\v -> eval env v) (parseLisp input)
+
 parseEval :: String -> Either ParseError LispValue
-parseEval input = either (\e -> Left e) (\v -> Right $ snd $ eval nullEnv v) (parseLisp input)
+parseEval input = either (\e -> Left e) (\v -> Right $ snd v) (parseEvalInEnv nullEnv input)
 
 
 showValue :: LispValue -> String
