@@ -3,7 +3,7 @@ A toy Lisp loosely based on [Write Yourself a Scheme in 48 Hours](https://en.wik
 TODO:
 
 - [ ] error checking
-- [ ] repl
+- [x] repl
 - [ ] builtins for IO
 - [ ] builtins for list manipulation
 - [ ] a basic standard library
@@ -19,6 +19,7 @@ TODO:
 - [x] recursion
 - [ ] modules/namespaces
 - [x] show AST
+- [ ] maps
 
 To hack:
 
