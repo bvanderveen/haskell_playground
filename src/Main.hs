@@ -1,7 +1,11 @@
---import Playground
 import System.IO
-import Playground.Parser
 import Playground
+import Playground.Parser
+
+parseEvalInEnvString :: Env -> String -> (Env, String)
+parseEvalInEnvString env input = case parseEvalInEnv env input of
+    (Left e) -> (env, show e)
+    (Right v) -> (fst v, showValue $ snd v)
 
 repl :: Env -> IO ()
 repl env = putStr "> " >> hFlush stdout >>
@@ -10,9 +14,8 @@ repl env = putStr "> " >> hFlush stdout >>
         if input == "quit" 
             then return ()
             else 
-                case parseEvalInEnv env input of
-                    (Left e) -> putStrLn (show e) >> repl env
-                    (Right v) -> putStrLn (showValue $ snd v) >> repl (fst v)
+                let result = parseEvalInEnvString env input in
+                putStrLn (snd result) >> repl (fst result)
 
 main :: IO ()
 main = repl nullEnv
