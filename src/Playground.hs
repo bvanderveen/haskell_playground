@@ -27,6 +27,10 @@ lispValueAsInteger :: LispValue -> Integer
 lispValueAsInteger (Number n) = n
 lispValueAsInteger v = error $ "Not an integer: " ++ show v
 
+nth :: [LispValue] -> LispValue
+nth [Number n, List xs] = xs !! fromIntegral n
+nth v = error $ "nth takes an integer and a list"
+
 builtins :: [(String, Builtin)]
 builtins = [
     ("+", numericBinaryOperator (+)),
@@ -36,7 +40,8 @@ builtins = [
     ("mod", numericBinaryOperator mod),
     ("=", equalValues),
     ("map", mapValues),
-    ("reduce", reduceValues)]
+    ("reduce", reduceValues),
+    ("nth", nth)]
 
 bindEnv :: Env -> [(String, LispValue)] -> Env
 bindEnv env bindings = env ++ bindings

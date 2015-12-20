@@ -124,18 +124,23 @@ spec = do
 
     describe "builtins" $ do
 
-        it "should eval addition and subtraction" $ do
+        it "should access lists" $ do
+            parseEval "(nth 0 '(0 1 2 3))" `shouldBe` Right (Number 0)
+            parseEval "(nth 1 '(0 1 2 3))" `shouldBe` Right (Number 1)
+            parseEval "(nth 3 '(0 1 2 3))" `shouldBe` Right (Number 3)
+
+        it "should add and subtract" $ do
             parseEval "(+ 1 2)" `shouldBe` Right (Number 3)
             parseEval "(- 1 2)" `shouldBe` Right (Number (-1))
             parseEval "(+ 1 2 3)" `shouldBe` Right (Number 6)
             parseEval "(+ 1 (+ 2 3) (+ 4 5) 5 (- 3 1))" `shouldBe` Right (Number 22)
 
-        it "should eval multiply and divide" $ do
+        it "should multiply and divide" $ do
             parseEval "(* 3 4)" `shouldBe` Right (Number 12)
             parseEval "(/ 12 4)" `shouldBe` Right (Number 3)
             parseEval "(mod 12 5)" `shouldBe` Right (Number 2)
 
-        it "should eval equality" $ do
+        it "should do equality" $ do
             parseEval "(= 3 4)" `shouldBe` Right (Bool False)
             parseEval "(= 1 1)" `shouldBe` Right (Bool True)
             parseEval "(= '(12 5) '())" `shouldBe` Right (Bool False)
